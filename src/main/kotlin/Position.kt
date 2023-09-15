@@ -71,14 +71,15 @@ data class Position(var startLine: Int, var pos: MutableList<Line>) {
     }
 
     fun generateMoves(): MutableSet<Position> {
-        occuredPositions[this.toString()]?.let {
+        val str = this.toString()
+        occuredPositions[str]?.let {
             return it
         }
         val generatedList = mutableSetOf<Position>()
         possibleMove().forEach {
             generatedList.add(applyMove(it))
         }
-        occuredPositions.put(this.toString(), generatedList)
+        occuredPositions.put(str, generatedList)
         return generatedList
     }
 
