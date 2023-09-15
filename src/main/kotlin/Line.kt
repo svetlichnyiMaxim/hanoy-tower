@@ -1,4 +1,4 @@
-class Line(var elements: MutableList<Byte>) {
+class Line(private var elements: MutableList<Byte>) {
 
     // This print line in human-readable form
     override fun toString(): String {
@@ -40,7 +40,7 @@ class Line(var elements: MutableList<Byte>) {
         throw IllegalStateException()
     }
 
-    fun topOneIndex(): Int {
+    private fun topOneIndex(): Int {
         // we use the fact, that they are always sorted like this 0, 1, 2, 3, 4...
         elements.forEachIndexed { index, i ->
             if (i != 0.toByte() || index == 7)

@@ -19,7 +19,7 @@ data class Position(var startLine: Int, var pos: MutableList<Line>) {
         }
     }
 
-    fun hasWon(): Boolean {
+    private fun hasWon(): Boolean {
         pos.forEachIndexed { index, line ->
             if (index != startLine) {
                 if (line.isFull()) {
@@ -30,7 +30,7 @@ data class Position(var startLine: Int, var pos: MutableList<Line>) {
         return false
     }
 
-    fun possibleMove(): MutableSet<Pair<Int, Int>> {
+    private fun possibleMove(): MutableSet<Pair<Int, Int>> {
         val list = mutableSetOf<Pair<Int, Int>>()
         pos.forEachIndexed { index1, it1 ->
             if (!it1.isEmpty()) pos.forEachIndexed { index, it ->
@@ -42,7 +42,7 @@ data class Position(var startLine: Int, var pos: MutableList<Line>) {
         return list
     }
 
-    tailrec fun generateMoves(depth: Int, originalDepth: Int): MutableSet<Position> {
+    private tailrec fun generateMoves(depth: Int, originalDepth: Int): MutableSet<Position> {
         if (depth == 1) {
             val listToCheck = generateMoves()
             listToCheck.forEach {
@@ -70,20 +70,20 @@ data class Position(var startLine: Int, var pos: MutableList<Line>) {
         else list
     }
 
-    fun generateMoves(): MutableSet<Position> {
+    private fun generateMoves(): MutableSet<Position> {
         val str = this.toString()
-        occuredPositions[str]?.let {
+        occurredPositions[str]?.let {
             return it
         }
         val generatedList = mutableSetOf<Position>()
         possibleMove().forEach {
             generatedList.add(applyMove(it))
         }
-        occuredPositions.put(str, generatedList)
+        occurredPositions[str] = generatedList
         return generatedList
     }
 
-    fun applyMove(move: Pair<Int, Int>): Position {
+    private fun applyMove(move: Pair<Int, Int>): Position {
         val lineToRemove = move.first
         val lineToAdd = move.second
         val elementToMove = this.pos[lineToRemove].topOne()

@@ -1,14 +1,14 @@
 import kotlin.system.measureTimeMillis
 
-const val version = 0.5
+const val version: Double = 0.5
 fun main() {
     println("Starting version $version")
     Main().start()
 }
 
-var isSolved = false
+var isSolved: Boolean = false
 var solvedStep: Int = Int.MAX_VALUE
-var occuredPositions = HashMap<String, MutableSet<Position>>()
+var occurredPositions: java.util.HashMap<String, MutableSet<Position>> = HashMap()
 
 class Main {
     fun start() {
