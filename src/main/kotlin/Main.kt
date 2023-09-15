@@ -7,21 +7,25 @@ fun main(args: Array<String>) {
 class Main {
     fun start(args: Array<String>) {
         val emptyLine = Line(mutableListOf(0, 0, 0, 0, 0, 0, 0, 0))
-        val emptyLine1 = Line(mutableListOf(0, 0, 0, 0, 0, 0, 0, 0))
-        val notEmptyLine = Line(mutableListOf(1, 2, 3, 4, 5, 6, 7, 8))
-        val def = Position(
-            0,
-            mutableListOf(
-                notEmptyLine, emptyLine.copy(), emptyLine1.copy()
-            )
-        )
+        val emptyLine1 = Line(mutableListOf(0, 0, 0, 0, 0, 0, 2, 1))
+        val notEmptyLine = Line(mutableListOf(0, 0, 3, 4, 5, 6, 7, 8))
         val def2 = Position(
-            0,
+            1,
             mutableListOf(
                 notEmptyLine, emptyLine.copy(), emptyLine1.copy()
             )
         )
-        println(def2.evaluation())
+
+        print(notEmptyLine.topOne())
+        def2.generateMoves().forEach {
+            it.display()
+            println()
+        }
+        println("ENDED")
+        def2.generateMoves(2).forEach {
+            it.display()
+            println()
+        }
     }
 
     data class Position(var startLine: Int, var pos: MutableList<Line>) {
@@ -50,7 +54,7 @@ class Main {
                     val f = it.topOne()
                     val f1 = it1.topOne()
                     if (it != it1) {
-                        if (f < f1) {
+                        if (f > f1) {
                             list.add(Pair(index1, index))
                         }
                     }
@@ -59,15 +63,32 @@ class Main {
             return list
         }
 
-        fun generateMoves(depth: Int) {
-
+        fun generateMoves(depth: Int): MutableList<Position> {
+            if (depth == 1) {
+                val listToCheck = generateMoves()
+                listToCheck.forEach {
+                    if (it.evaluation() == 100) {
+                        println("SOLVED")
+                        return listToCheck
+                    }
+                }
+                return listToCheck
+            }
+            var list = mutableListOf<Position>()
+            generateMoves().forEach {
+                if (it.evaluation() == 100) {
+                    println("SOLVED")
+                }
+                it.generateMoves(depth - 1).forEach { it1 ->
+                    list.add(it1)
+                }
+            }
+            return list
         }
 
         fun generateMoves(): MutableList<Position> {
             val generatedList = mutableListOf<Position>()
             possibleMove().forEach {
-                println(it)
-                applyMove(it).display()
                 generatedList.add(applyMove(it))
             }
             return generatedList
@@ -96,21 +117,26 @@ class Main {
             return Line(copy)
         }
 
-        fun addElement(element: Int): Line { // we don't check if there any space left, cause there are n elements and size of tower is n
+        fun addElement(element: Int): Line {
+            // we don't check if there any space left, cause there are n elements and size of tower is n
             val copy = this.elements.toMutableList()
             val index1: Int = if (this.topOne() == 0) {
-                elements.indexOf(this.topOne())
+                elements.indexOfLast { it == this.topOne() }
             } else {
-                elements.indexOf(this.topOne()) + 1
+                elements.indexOfLast { it == this.topOne() } - 1
             }
             copy[index1] = element
             return Line(copy)
         }
 
         fun topOne(): Int {
-            // we use the fact, that they are always sorted like this 8, 5, 4, 1, 0...
-            val index = elements.sorted().last()
-            return index
+            // we use the fact, that they are always sorted like this 0, 1, 2, 3, 4...
+            elements.forEachIndexed { index, i ->
+                if (i != 0 || index == 7)
+                    return i
+            }
+            // This never happens
+            throw IllegalStateException()
         }
 
         fun copy(): Line {
