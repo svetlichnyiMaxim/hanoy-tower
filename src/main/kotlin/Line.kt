@@ -1,6 +1,8 @@
 class Line(private var elements: MutableList<Byte>) {
 
-    // This print line in human-readable form
+    /*
+    This print line in human-readable form
+     */
     override fun toString(): String {
         var stringBuilder = ""
         elements.forEach {
@@ -20,7 +22,8 @@ class Line(private var elements: MutableList<Byte>) {
     }
 
     fun addElement(element: Int): Line {
-        // we don't check if there is any space left, cause there are n elements and size of tower is n
+        // we don't check if there is any space left, cause there are n elements and size of tower we want to move
+        // an element to is n-1 at max
         val copy = this.elements.toMutableList()
         copy[this.topOneIndex() + if (this.topOne() == 0) 0 else -1] = element.toByte()
         return Line(copy)
@@ -48,10 +51,6 @@ class Line(private var elements: MutableList<Byte>) {
         }
         // This never happens
         throw IllegalStateException()
-    }
-
-    fun copy(): Line {
-        return Line(elements.toMutableList())
     }
 
     fun display() {
