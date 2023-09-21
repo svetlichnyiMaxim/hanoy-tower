@@ -1,8 +1,8 @@
-import kotlin.math.min
+class Position(private var startLine: Int, private var pos: MutableList<Line>) {
 
-data class Position(var startLine: Int, var pos: MutableList<Line>) {
-
-    fun startSolving(depth: Int): MutableSet<Position> = generateMoves(depth, depth)
+    fun startSolving(depth: Int): MutableList<MutableList<Pair<Position, Int>>> {
+        return generateMoves(depth, depth)
+    }
 
     override fun toString(): String {
         var str = startLine.toString()
@@ -40,32 +40,34 @@ data class Position(var startLine: Int, var pos: MutableList<Line>) {
         return list
     }
 
-    private tailrec fun generateMoves(depth: Int, originalDepth: Int): MutableSet<Position> {
+    private tailrec fun generateMoves(depth: Int, originalDepth: Int): MutableList<MutableList<Pair<Position, Int>>> {
+        val currentDepth = originalDepth - depth + 1
+        // no need to continue investigation if we can't improve depth score
         if (depth == 1) {
             generateMoves().forEach {
                 if (it.hasWon()) {
-                    solvedStep = min(originalDepth - depth + 1, solvedStep)
-                    isSolved = true
-                    return mutableSetOf(it)
+                    return mutableListOf(mutableListOf(Pair(it, currentDepth)))
                 }
             }
             // if we weren't able to find a solution, what's the point of returning it?
-            return mutableSetOf()
+            return mutableListOf()
         }
 
-        val list = mutableSetOf<Position>()
-        generateMoves().forEach {
-            if (it.hasWon()) {
-                solvedStep = min(originalDepth - depth + 1, solvedStep)
-                isSolved = true
-                return mutableSetOf(it)
+        val list = mutableListOf<MutableList<Pair<Position, Int>>>()
+        generateMoves().forEach { pos ->
+            if (pos.hasWon()) {
+                return mutableListOf(mutableListOf(Pair(pos, currentDepth)))
             }
-            it.generateMoves(depth - 1, originalDepth).forEach { it1 ->
-                list.add(it1)
-            }
+            // Adds all moving sequences
+            list.addAll(pos.generateMoves(depth - 1, originalDepth).filter { it.isNotEmpty() })
         }
-        return if (list.isNotEmpty()) mutableSetOf(list.first())
-        else list
+        if (list.any { it.isNotEmpty() }) {
+            // we sort the list according to the final depth
+            return mutableListOf((list.minBy { it.first().second } + Pair(this, -1)).toMutableList())
+        }
+        // fallback option
+        return mutableListOf(
+        )
     }
 
     private fun generateMoves(): MutableSet<Position> {
