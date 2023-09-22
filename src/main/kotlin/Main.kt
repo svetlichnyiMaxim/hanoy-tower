@@ -1,27 +1,38 @@
 import kotlin.system.measureTimeMillis
 
-const val version: Double = 0.5
 fun main() {
-    println("Starting version $version")
     Main().start()
 }
 
 var occurredPositions: HashMap<String, MutableSet<Position>> = HashMap()
 
+
+val examplePos = Position(
+    2, mutableListOf(
+        Line(mutableListOf(0, 0, 0, 0, 5, 6, 7, 8)),
+        Line(mutableListOf(0, 0, 0, 0, 0, 0, 0, 0)),
+        Line(mutableListOf(0, 0, 0, 0, 1, 2, 3, 4))
+    )
+)
+
 class Main {
     fun start() {
-        val examplePos = Position(
-            2, mutableListOf(
-                Line(mutableListOf(0, 0, 0, 4, 5, 6, 7, 8)),
-                Line(mutableListOf(0, 0, 0, 0, 0, 0, 0, 0)),
-                Line(mutableListOf(0, 0, 0, 0, 0, 1, 2, 3))
-            )
-        )
+        println("Enter search depth")
+        var choosenDepth = readln().toInt()
+        println("Enter max possible search depth")
+        val maxDepth = readln().toInt()
+        while (!runProgram(choosenDepth) && choosenDepth < maxDepth) {
+            choosenDepth += 2
+        }
+    }
+
+    fun runProgram(currentDepth: Int): Boolean {
+        var solved = false
         println(
             "Finished time measuring, it took ${
                 measureTimeMillis {
-                    val solveResult = examplePos.startSolving(16)
-                    if (solveResult.first().isNotEmpty()) {
+                    val solveResult = examplePos.startSolving(currentDepth)
+                    if (solveResult.isNotEmpty() && solveResult.first().isNotEmpty()) {
                         println("It was solved in ${solveResult.first().first().second} steps")
                         solveResult.forEach {
                             it.forEach { (first, _) ->
@@ -30,10 +41,12 @@ class Main {
                             }
                         }
                         println("*".repeat(15))
+                        solved = true
                     } else {
-                        println("It wasn't solved yet, try with bigger depth")
+                        println("It wasn't solved yet, trying with bigger depth ${currentDepth + 2}")
                     }
                 }
             } ms")
+        return solved
     }
 }

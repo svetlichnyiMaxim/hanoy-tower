@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+    //implementation("io.github.pavleprica:kotlin-cache:1.1.1")
     testImplementation(kotlin("test"))
 }
 
