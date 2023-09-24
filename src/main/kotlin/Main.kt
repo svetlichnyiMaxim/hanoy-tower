@@ -4,7 +4,7 @@ fun main() {
     Main().start()
 }
 
-var occurredPositions: HashMap<String, MutableSet<Position>> = HashMap()
+var occurredPositions: MutableMap<String, MutableSet<Position>> = mutableMapOf()
 
 
 val examplePos = Position(
