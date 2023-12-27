@@ -11,8 +11,7 @@ repositories {
 }
 
 dependencies {
-    //implementation("io.github.pavleprica:kotlin-cache:1.1.1")
-    testImplementation(kotlin("test"))
+    testImplementation(kotlin("test:1.8.10"))
 }
 
 tasks.test {

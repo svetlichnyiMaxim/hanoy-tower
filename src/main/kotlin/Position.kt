@@ -40,7 +40,7 @@ class Position(private var startLine: Int, private var pos: MutableList<Line>) {
         return list
     }
 
-    private tailrec fun generateMoves(depth: Int, originalDepth: Int): MutableList<MutableList<Pair<Position, Int>>> {
+    private fun generateMoves(depth: Int, originalDepth: Int): MutableList<MutableList<Pair<Position, Int>>> {
         val currentDepth = originalDepth - depth + 1
         // no need to continue investigation if we can't improve depth score
         if (depth == 1) {

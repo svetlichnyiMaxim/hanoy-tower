@@ -7,26 +7,26 @@ fun main() {
 var occurredPositions: MutableMap<String, MutableSet<Position>> = mutableMapOf()
 
 
-val examplePos = Position(
+val examplePos: Position = Position(
     2, mutableListOf(
-        Line(mutableListOf(0, 0, 0, 0, 5, 6, 7, 8)),
-        Line(mutableListOf(0, 0, 0, 0, 0, 0, 0, 0)),
-        Line(mutableListOf(0, 0, 0, 0, 1, 2, 3, 4))
+        Line(byteArrayOf(0, 0, 0, 4, 5, 6, 7, 8)),
+        Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0)),
+        Line(byteArrayOf(0, 0, 0, 0, 0, 1, 2, 3))
     )
 )
 
 class Main {
     fun start() {
         println("Enter search depth")
-        var choosenDepth = readln().toInt()
+        var chosenDepth = readln().toInt()
         println("Enter max possible search depth")
         val maxDepth = readln().toInt()
-        while (!runProgram(choosenDepth) && choosenDepth < maxDepth) {
-            choosenDepth += 2
+        while (!runProgram(chosenDepth) && chosenDepth < maxDepth) {
+            chosenDepth += 2
         }
     }
 
-    fun runProgram(currentDepth: Int): Boolean {
+    private fun runProgram(currentDepth: Int): Boolean {
         var solved = false
         println(
             "Finished time measuring, it took ${

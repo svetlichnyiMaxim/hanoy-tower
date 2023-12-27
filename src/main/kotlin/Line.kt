@@ -1,4 +1,4 @@
-class Line(private var elements: MutableList<Byte>) {
+class Line(private var elements: ByteArray) {
 
     /*
     This print line in human-readable form
@@ -16,7 +16,7 @@ class Line(private var elements: MutableList<Byte>) {
     }
 
     fun removeTopElement(): Line {
-        val copy = this.elements.toMutableList()
+        val copy = this.elements.copyOf()
         copy[this.topOneIndex()] = 0
         return Line(copy)
     }
@@ -24,7 +24,7 @@ class Line(private var elements: MutableList<Byte>) {
     fun addElement(element: Int): Line {
         // we don't check if there is any space left, cause there are n elements and size of tower we want to move
         // and element to move is n-1 at max
-        val copy = this.elements.toMutableList()
+        val copy = this.elements.copyOf()
         copy[this.topOneIndex() + if (this.topOne() == 0) 0 else -1] = element.toByte()
         return Line(copy)
     }
