@@ -19,15 +19,8 @@ class Position(var startLine: Int, var lines: MutableList<Line>) {
         }
     }
 
-    /**
-     * it is used for easier starting of solving function
-     */
-    fun startSolving(depth: Int): MutableCollection<MutableList<Pair<Position, Int>>> {
-        return generateMoves(depth, depth)
-    }
-
     override fun toString(): String {
-        return startLine.toString() + lines[0] + lines[1] + lines[2]
+        return lines[0].toString() + "|" + lines[1].toString() + "|" + lines[2].toString()
     }
 
     /**
@@ -44,12 +37,19 @@ class Position(var startLine: Int, var lines: MutableList<Line>) {
      * @return if the game has ended
      */
     private fun hasWon(): Boolean {
-        lines.forEachIndexed { index, line ->
-            if (index != startLine && line.isFull()) {
-                return true
+        return when (startLine) {
+            0 -> {
+                lines[1].isFull() || lines[2].isFull()
+            }
+
+            1 -> {
+                lines[0].isFull() || lines[2].isFull()
+            }
+
+            else -> {
+                lines[0].isFull() || lines[1].isFull()
             }
         }
-        return false
     }
 
     /**
@@ -58,7 +58,7 @@ class Position(var startLine: Int, var lines: MutableList<Line>) {
     private fun possibleMove(): MutableSet<Move> {
         val list = mutableSetOf<Move>()
         lines.forEachIndexed { startIndex, startElement ->
-            if (lines[startIndex].isEmpty()) {
+            if (lines[startIndex].empty()) {
                 return@forEachIndexed
             }
             lines.forEachIndexed { endIndex, endElement ->
@@ -73,7 +73,10 @@ class Position(var startLine: Int, var lines: MutableList<Line>) {
     /**
      * generates move from position
      */
-    private fun generateMoves(depth: Int, originalDepth: Int): MutableCollection<MutableList<Pair<Position, Int>>> {
+    fun generateMoves(
+        depth: Int,
+        originalDepth: Int = depth
+    ): MutableCollection<MutableList<Pair<Position, Int>>> {
         val currentDepth = originalDepth - depth + 1
         // no need to continue investigation if we can't improve depth score
         if (depth == 1) {
@@ -129,7 +132,7 @@ class Position(var startLine: Int, var lines: MutableList<Line>) {
         val elementToMove = this.lines[lineToRemove].topElement()
         val copy = lines.toMutableList()
         copy[lineToRemove] = copy[lineToRemove].removeTopElement()
-        copy[lineToAdd] = copy[lineToAdd].addElement(elementToMove!!)
+        copy[lineToAdd] = copy[lineToAdd].addElement(elementToMove)
         return Position(startLine, copy)
     }
 }
