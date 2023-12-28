@@ -1,4 +1,16 @@
-class Line(private var elements: ByteArray) {
+class Line(private var elements: ByteArray, var topOneIndex: Int = -1) {
+    init {
+        if (topOneIndex == -1) {
+            topOneIndex = topOneIndex()
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is Line) {
+            return this.elements.contentEquals(other.elements)
+        }
+        return super.equals(other)
+    }
 
     /*
     This print line in human-readable form
@@ -18,7 +30,7 @@ class Line(private var elements: ByteArray) {
     fun removeTopElement(): Line {
         val copy = this.elements.copyOf()
         copy[this.topOneIndex()] = 0
-        return Line(copy)
+        return Line(copy, this.topOneIndex - 1)
     }
 
     fun addElement(element: Int): Line {
@@ -26,7 +38,7 @@ class Line(private var elements: ByteArray) {
         // and element to move is n-1 at max
         val copy = this.elements.copyOf()
         copy[this.topOneIndex() + if (this.topOne() == 0) 0 else -1] = element.toByte()
-        return Line(copy)
+        return Line(copy, this.topOneIndex + 1)
     }
 
     fun isEmpty(): Boolean {

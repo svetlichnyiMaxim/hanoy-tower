@@ -1,5 +1,20 @@
 class Position(private var startLine: Int, private var pos: MutableList<Line>) {
 
+    override fun equals(other: Any?): Boolean {
+        if (other is Position) {
+            if (this.startLine == other.startLine) {
+                this.pos.forEachIndexed { index, line ->
+                    if (line == other.pos[index]) {
+                        return true
+                    }
+                }
+            }
+            return false
+        } else {
+            return super.equals(other)
+        }
+    }
+
     fun startSolving(depth: Int): MutableList<MutableList<Pair<Position, Int>>> {
         return generateMoves(depth, depth)
     }
