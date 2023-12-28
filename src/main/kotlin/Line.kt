@@ -4,7 +4,7 @@
  * @param elements elements in the array
  * @param topOneIndex stores top index of the line
  */
-class Line(private var elements: ByteArray, private var topOneIndex: Int = -1) {
+class Line(private var elements: ByteArray, private var topOneIndex: Int) {
     constructor(elements: ByteArray) : this(elements, elements.indexOfFirst { it == 0.toByte() })
 
     /**
@@ -21,13 +21,13 @@ class Line(private var elements: ByteArray, private var topOneIndex: Int = -1) {
     /**
      * prints line data in human-readable form
      */
-    override fun toString(): String {
-        var stringBuilder = 0
-        elements.filter { it != 0.toByte() }.forEach {
+    fun toLong(): Long {
+        var stringBuilder = 0L
+        elements.forEach {
             stringBuilder *= 10
             stringBuilder += it
         }
-        return stringBuilder.toString()
+        return stringBuilder
     }
 
     /**
@@ -35,7 +35,7 @@ class Line(private var elements: ByteArray, private var topOneIndex: Int = -1) {
      * @return if the line is full
      */
     fun isFull(): Boolean {
-        return elements.last() != 0.toByte()
+        return topOneIndex == 8
     }
 
     /**

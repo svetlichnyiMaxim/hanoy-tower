@@ -3,7 +3,7 @@
  * @param startLine line we started from
  * @param lines all lines
  */
-class Position(var startLine: Int, var lines: MutableList<Line>) {
+class Position(val startLine: Int, val lines: MutableList<Line>) {
     override fun equals(other: Any?): Boolean {
         if (other is Position) {
             if (this.startLine == other.startLine) {
@@ -19,8 +19,8 @@ class Position(var startLine: Int, var lines: MutableList<Line>) {
         }
     }
 
-    override fun toString(): String {
-        return lines[0].toString() + "|" + lines[1].toString() + "|" + lines[2].toString()
+    private fun toLong(): Long {
+        return lines[0].toLong() * 1_000_000_000_000_000_000 + lines[1].toLong() * 1_000_000_000 + lines[2].toLong()
     }
 
     /**
@@ -107,8 +107,8 @@ class Position(var startLine: Int, var lines: MutableList<Line>) {
     /**
      * @return all possible positions we can get after a move
      */
-    fun generateMoves(): MutableSet<Position> {
-        val str = this.toString()
+    private fun generateMoves(): MutableSet<Position> {
+        val str = this.toLong()
         // if this pos was stored, we can use it's cached version, saves a lot of time
         occurredPositions[str]?.let {
             return it

@@ -1,5 +1,8 @@
 import kotlin.system.measureTimeMillis
 
+/**
+ * part where the program starts
+ */
 fun main() {
     var chosenDepth = 15
     while (!runProgram(chosenDepth) && chosenDepth < 25) {
@@ -7,9 +10,15 @@ fun main() {
     }
 }
 
-var occurredPositions: MutableMap<String, MutableSet<Position>> = mutableMapOf()
+/**
+ * we store occurred positions here which massively increases speed
+ */
+var occurredPositions: HashMap<Long, MutableSet<Position>> = hashMapOf()
 
 
+/**
+ * an example pos created for testing
+ */
 val examplePos: Position = Position(
     2, mutableListOf(
         Line(byteArrayOf(8, 7, 6, 5, 0, 0, 0, 0)),
