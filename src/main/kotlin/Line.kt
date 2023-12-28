@@ -17,6 +17,7 @@ class Line(private var elements: ByteArray, var topOneIndex: Int = -1) {
      */
     override fun toString(): String {
         var stringBuilder = ""
+        elements.toTypedArray()
         elements.forEach {
             stringBuilder += it
         }
