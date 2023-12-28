@@ -10,9 +10,9 @@ var occurredPositions: MutableMap<String, MutableSet<Position>> = mutableMapOf()
 
 val examplePos: Position = Position(
     2, mutableListOf(
-        Line(byteArrayOf(8, 7, 6, 5, 0, 0, 0, 0)),
+        Line(byteArrayOf(8, 7, 6, 0, 0, 0, 0, 0)),
         Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0)),
-        Line(byteArrayOf(4, 3, 2, 1, 0, 0, 0, 0))
+        Line(byteArrayOf(5, 4, 3, 2, 1, 0, 0, 0))
     )
 )
 

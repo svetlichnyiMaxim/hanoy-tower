@@ -57,12 +57,13 @@ class Position(var startLine: Int, var lines: MutableList<Line>) {
      */
     private fun possibleMove(): MutableSet<Move> {
         val list = mutableSetOf<Move>()
-        lines.forEachIndexed { startIndex, _ ->
-            if (!lines[startIndex].isEmpty()) {
-                lines.forEachIndexed { endIndex, it ->
-                    if (endIndex != startIndex && (it.isEmpty() || lines[endIndex].topElement()!! > lines[startIndex].topElement()!!)) {
-                        list.add(Move(startIndex, endIndex))
-                    }
+        lines.forEachIndexed { startIndex, startElement ->
+            if (lines[startIndex].isEmpty()) {
+                return@forEachIndexed
+            }
+            lines.forEachIndexed { endIndex, endElement ->
+                if (endIndex != startIndex && endElement.topElement() > startElement.topElement()) {
+                    list.add(Move(startIndex, endIndex))
                 }
             }
         }

@@ -64,10 +64,10 @@ class Line(private var elements: ByteArray, private var topOneIndex: Int = -1) {
     }
 
     /**
-     * @return topElement if exists, null if line is full
+     * @return topElement if exists, 9 if line is full
      */
-    fun topElement(): Byte? {
-        return elements.lastOrNull { it != 0.toByte() }
+    fun topElement(): Byte {
+        return elements.lastOrNull { it != 0.toByte() } ?: 9
     }
 
     private fun topIndex(): Int {
