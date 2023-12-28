@@ -1,3 +1,4 @@
+import kotlin.system.measureNanoTime
 import kotlin.system.measureTimeMillis
 
 fun main() {
@@ -9,19 +10,16 @@ var occurredPositions: MutableMap<String, MutableSet<Position>> = mutableMapOf()
 
 val examplePos: Position = Position(
     2, mutableListOf(
-        Line(byteArrayOf(0, 0, 0, 0, 5, 6, 7, 8)),
+        Line(byteArrayOf(8, 7, 6, 5, 0, 0, 0, 0)),
         Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0)),
-        Line(byteArrayOf(0, 0, 0, 0, 1, 2, 3, 4))
+        Line(byteArrayOf(4, 3, 2, 1, 0, 0, 0, 0))
     )
 )
 
 class Main {
     fun start() {
-        println("Enter search depth")
-        var chosenDepth = readln().toInt()
-        println("Enter max possible search depth")
-        val maxDepth = readln().toInt()
-        while (!runProgram(chosenDepth) && chosenDepth < maxDepth) {
+        var chosenDepth = 1
+        while (!runProgram(chosenDepth) && chosenDepth < 25) {
             chosenDepth += 2
         }
     }

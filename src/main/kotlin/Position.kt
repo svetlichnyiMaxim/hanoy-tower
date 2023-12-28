@@ -4,27 +4,23 @@ class Position(private var startLine: Int, private var pos: MutableList<Line>) {
         if (other is Position) {
             if (this.startLine == other.startLine) {
                 this.pos.forEachIndexed { index, line ->
-                    if (line == other.pos[index]) {
-                        return true
+                    if (line != other.pos[index]) {
+                        return false
                     }
                 }
             }
-            return false
+            return true
         } else {
             return super.equals(other)
         }
     }
 
-    fun startSolving(depth: Int): MutableList<MutableList<Pair<Position, Int>>> {
+    fun startSolving(depth: Int): MutableCollection<MutableList<Pair<Position, Int>>> {
         return generateMoves(depth, depth)
     }
 
     override fun toString(): String {
-        var str = startLine.toString()
-        pos.forEach {
-            str += it.toString()
-        }
-        return str
+        return startLine.toString() + pos[0] + pos[1] + pos[2]
     }
 
     fun display() {
@@ -45,9 +41,11 @@ class Position(private var startLine: Int, private var pos: MutableList<Line>) {
 
     private fun possibleMove(): MutableSet<Pair<Int, Int>> {
         val list = mutableSetOf<Pair<Int, Int>>()
+        // from
         pos.forEachIndexed { index1, it1 ->
             if (!it1.isEmpty()) pos.forEachIndexed { index, it ->
-                if (it.topOne() > it1.topOne() || it.isEmpty()) {
+                // to
+                if (index != index1 && (it.isEmpty() || it.topOne()!! > it1.topOne()!!)) {
                     list.add(Pair(index1, index))
                 }
             }
@@ -55,7 +53,7 @@ class Position(private var startLine: Int, private var pos: MutableList<Line>) {
         return list
     }
 
-    private fun generateMoves(depth: Int, originalDepth: Int): MutableList<MutableList<Pair<Position, Int>>> {
+    private fun generateMoves(depth: Int, originalDepth: Int): MutableCollection<MutableList<Pair<Position, Int>>> {
         val currentDepth = originalDepth - depth + 1
         // no need to continue investigation if we can't improve depth score
         if (depth == 1) {
@@ -68,7 +66,7 @@ class Position(private var startLine: Int, private var pos: MutableList<Line>) {
             return mutableListOf()
         }
 
-        val list = mutableListOf<MutableList<Pair<Position, Int>>>()
+        val list: MutableCollection<MutableList<Pair<Position, Int>>> = mutableListOf()
         generateMoves().forEach { pos ->
             if (pos.hasWon()) {
                 return mutableListOf(mutableListOf(Pair(pos, currentDepth)))
@@ -106,7 +104,7 @@ class Position(private var startLine: Int, private var pos: MutableList<Line>) {
         val elementToMove = this.pos[lineToRemove].topOne()
         val copy = pos.toMutableList()
         copy[lineToRemove] = copy[lineToRemove].removeTopElement()
-        copy[lineToAdd] = copy[lineToAdd].addElement(elementToMove)
+        copy[lineToAdd] = copy[lineToAdd].addElement(elementToMove!!)
         return Position(startLine, copy)
     }
 }

@@ -7,7 +7,8 @@ class Line(private var elements: ByteArray, var topOneIndex: Int = -1) {
 
     override fun equals(other: Any?): Boolean {
         if (other is Line) {
-            return this.elements.contentEquals(other.elements)
+            val b = this.elements.contentEquals(other.elements)
+            return b
         }
         return super.equals(other)
     }
@@ -17,51 +18,39 @@ class Line(private var elements: ByteArray, var topOneIndex: Int = -1) {
      */
     override fun toString(): String {
         var stringBuilder = ""
-        elements.toTypedArray()
-        elements.forEach {
-            stringBuilder += it
-        }
+        elements.forEach { stringBuilder += it }
         return stringBuilder
     }
 
     fun isFull(): Boolean {
-        return elements.first() != 0.toByte()
+        return elements.last() != 0.toByte()
     }
 
     fun removeTopElement(): Line {
         val copy = this.elements.copyOf()
-        copy[this.topOneIndex()] = 0
-        return Line(copy, this.topOneIndex - 1)
+        copy[topOneIndex - 1] = 0
+        return Line(copy, topOneIndex - 1)
     }
 
-    fun addElement(element: Int): Line {
+    fun addElement(element: Byte): Line {
         // we don't check if there is any space left, cause there are n elements and size of tower we want to move
         // and element to move is n-1 at max
         val copy = this.elements.copyOf()
-        copy[this.topOneIndex() + if (this.topOne() == 0) 0 else -1] = element.toByte()
+        copy[topOneIndex] = element
         return Line(copy, this.topOneIndex + 1)
     }
 
     fun isEmpty(): Boolean {
-        return elements.last() == 0.toByte()
+        return topOneIndex == 0
     }
 
-    fun topOne(): Int {
-        // we use the fact, that they are always sorted like this 0, 1, 2, 3, 4...
-        elements.forEachIndexed { index, i ->
-            if (i != 0.toByte() || index == 7) return i.toInt()
-        }
-        // This never happens
-        throw IllegalStateException()
+    // 2 1 0 0...
+    fun topOne(): Byte? {
+        return elements.lastOrNull { it != 0.toByte() }
     }
 
     private fun topOneIndex(): Int {
-        // we use the fact, that they are always sorted like this 0, 1, 2, 3, 4...
-        elements.forEachIndexed { index, i ->
-            if (i != 0.toByte() || index == 7) return index
-        }
-        // This never happens
-        throw IllegalStateException()
+        return elements.indexOfFirst { it == 0.toByte() }
     }
 
     fun display() {
