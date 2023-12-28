@@ -1,10 +1,19 @@
-class Line(private var elements: ByteArray, var topOneIndex: Int = -1) {
+/**
+ * provides a way to store line data, etc.
+ * new elements are stored at the start of the array
+ * @param elements elements in the array
+ * @param topOneIndex stores top index of the line
+ */
+class Line(private var elements: ByteArray, private var topOneIndex: Int = -1) {
     init {
         if (topOneIndex == -1) {
-            topOneIndex = topOneIndex()
+            topOneIndex = topIndex()
         }
     }
 
+    /**
+     * used in auto tests for proper comparison
+     */
     override fun equals(other: Any?): Boolean {
         if (other is Line) {
             val b = this.elements.contentEquals(other.elements)
@@ -13,8 +22,8 @@ class Line(private var elements: ByteArray, var topOneIndex: Int = -1) {
         return super.equals(other)
     }
 
-    /*
-    This print line in human-readable form
+    /**
+     * prints line data in human-readable form
      */
     override fun toString(): String {
         var stringBuilder = ""
@@ -22,37 +31,52 @@ class Line(private var elements: ByteArray, var topOneIndex: Int = -1) {
         return stringBuilder
     }
 
+    /**
+     * checks if line is full
+     * @return if the line is full
+     */
     fun isFull(): Boolean {
         return elements.last() != 0.toByte()
     }
 
+    /**
+     * @return copy of the line with a removed top element
+     */
     fun removeTopElement(): Line {
         val copy = this.elements.copyOf()
         copy[topOneIndex - 1] = 0
         return Line(copy, topOneIndex - 1)
     }
 
+    /**
+     * @return copy of the line with the specific element added to the top
+     */
     fun addElement(element: Byte): Line {
-        // we don't check if there is any space left, cause there are n elements and size of tower we want to move
-        // and element to move is n-1 at max
-        val copy = this.elements.copyOf()
-        copy[topOneIndex] = element
+        val copy = this.elements.copyOf().apply { this[topOneIndex] = element }
         return Line(copy, this.topOneIndex + 1)
     }
 
+    /**
+     * used to determine if the line is empty
+     */
     fun isEmpty(): Boolean {
         return topOneIndex == 0
     }
 
-    // 2 1 0 0...
-    fun topOne(): Byte? {
+    /**
+     * @return topElement if exists, null if line is full
+     */
+    fun topElement(): Byte? {
         return elements.lastOrNull { it != 0.toByte() }
     }
 
-    private fun topOneIndex(): Int {
+    private fun topIndex(): Int {
         return elements.indexOfFirst { it == 0.toByte() }
     }
 
+    /**
+     * displays line in a human-readable form
+     */
     fun display() {
         elements.forEach { if (it != 0.toByte()) print("$it ") else print("  ") }
     }

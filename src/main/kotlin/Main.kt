@@ -1,7 +1,7 @@
-import kotlin.system.measureNanoTime
 import kotlin.system.measureTimeMillis
 
 fun main() {
+    println(examplePos.toString())
     Main().start()
 }
 

@@ -1,10 +1,14 @@
-class Position(private var startLine: Int, private var pos: MutableList<Line>) {
-
+/**
+ * used to store position
+ * @param startLine line we started from
+ * @param lines all lines
+ */
+class Position(var startLine: Int, var lines: MutableList<Line>) {
     override fun equals(other: Any?): Boolean {
         if (other is Position) {
             if (this.startLine == other.startLine) {
-                this.pos.forEachIndexed { index, line ->
-                    if (line != other.pos[index]) {
+                this.lines.forEachIndexed { index, line ->
+                    if (line != other.lines[index]) {
                         return false
                     }
                 }
@@ -15,23 +19,32 @@ class Position(private var startLine: Int, private var pos: MutableList<Line>) {
         }
     }
 
+    /**
+     * it is used for easier starting of solving function
+     */
     fun startSolving(depth: Int): MutableCollection<MutableList<Pair<Position, Int>>> {
         return generateMoves(depth, depth)
     }
 
     override fun toString(): String {
-        return startLine.toString() + pos[0] + pos[1] + pos[2]
+        return startLine.toString() + lines[0] + lines[1] + lines[2]
     }
 
+    /**
+     * displays position in a human-readable form
+     */
     fun display() {
-        pos.forEach {
+        lines.forEach {
             it.display()
             println()
         }
     }
 
+    /**
+     * @return if the game has ended
+     */
     private fun hasWon(): Boolean {
-        pos.forEachIndexed { index, line ->
+        lines.forEachIndexed { index, line ->
             if (index != startLine && line.isFull()) {
                 return true
             }
@@ -39,20 +52,26 @@ class Position(private var startLine: Int, private var pos: MutableList<Line>) {
         return false
     }
 
-    private fun possibleMove(): MutableSet<Pair<Int, Int>> {
-        val list = mutableSetOf<Pair<Int, Int>>()
-        // from
-        pos.forEachIndexed { index1, it1 ->
-            if (!it1.isEmpty()) pos.forEachIndexed { index, it ->
-                // to
-                if (index != index1 && (it.isEmpty() || it.topOne()!! > it1.topOne()!!)) {
-                    list.add(Pair(index1, index))
+    /**
+     * @return possible moves that can occur
+     */
+    private fun possibleMove(): MutableSet<Move> {
+        val list = mutableSetOf<Move>()
+        lines.forEachIndexed { startIndex, _ ->
+            if (!lines[startIndex].isEmpty()) {
+                lines.forEachIndexed { endIndex, it ->
+                    if (endIndex != startIndex && (it.isEmpty() || lines[endIndex].topElement()!! > lines[startIndex].topElement()!!)) {
+                        list.add(Move(startIndex, endIndex))
+                    }
                 }
             }
         }
         return list
     }
 
+    /**
+     * generates move from position
+     */
     private fun generateMoves(depth: Int, originalDepth: Int): MutableCollection<MutableList<Pair<Position, Int>>> {
         val currentDepth = originalDepth - depth + 1
         // no need to continue investigation if we can't improve depth score
@@ -65,8 +84,7 @@ class Position(private var startLine: Int, private var pos: MutableList<Line>) {
             // if we weren't able to find a solution, what's the point of returning it?
             return mutableListOf()
         }
-
-        val list: MutableCollection<MutableList<Pair<Position, Int>>> = mutableListOf()
+        val list = mutableListOf<MutableList<Pair<Position, Int>>>()
         generateMoves().forEach { pos ->
             if (pos.hasWon()) {
                 return mutableListOf(mutableListOf(Pair(pos, currentDepth)))
@@ -79,11 +97,13 @@ class Position(private var startLine: Int, private var pos: MutableList<Line>) {
             return mutableListOf((list.minBy { it.first().second } + Pair(this, -1)).toMutableList())
         }
         // fallback option
-        return mutableListOf(
-        )
+        return mutableListOf()
     }
 
-    private fun generateMoves(): MutableSet<Position> {
+    /**
+     * @return all possible positions we can get after a move
+     */
+    fun generateMoves(): MutableSet<Position> {
         val str = this.toString()
         // if this pos was stored, we can use it's cached version, saves a lot of time
         occurredPositions[str]?.let {
@@ -98,13 +118,24 @@ class Position(private var startLine: Int, private var pos: MutableList<Line>) {
         return generatedList
     }
 
-    private fun applyMove(move: Pair<Int, Int>): Position {
-        val lineToRemove = move.first
-        val lineToAdd = move.second
-        val elementToMove = this.pos[lineToRemove].topOne()
-        val copy = pos.toMutableList()
+    /**
+     * @param move the move we made
+     * @return position after a curtain move
+     */
+    private fun applyMove(move: Move): Position {
+        val lineToRemove = move.startLine
+        val lineToAdd = move.endLine
+        val elementToMove = this.lines[lineToRemove].topElement()
+        val copy = lines.toMutableList()
         copy[lineToRemove] = copy[lineToRemove].removeTopElement()
         copy[lineToAdd] = copy[lineToAdd].addElement(elementToMove!!)
         return Position(startLine, copy)
     }
 }
+
+/**
+ * it is used to store move - related info
+ * @param startLine line we move the piece from
+ * @param endLine line we move the piece to
+ */
+class Move(var startLine: Int, var endLine: Int)

@@ -13,7 +13,11 @@ internal class SampleTest {
                 Line(byteArrayOf(3, 2, 1, 0, 0, 0, 0, 0))
             )
         )
-        val solveResult = examplePos.startSolving(10)
+        lateinit var solveResult: MutableCollection<MutableList<Pair<Position, Int>>>
+        val time = measureTimeMillis {
+            solveResult = examplePos.startSolving(10)
+        }
+        File("time").appendText("took $time ms to run \n")
         assert(solveResult.isNotEmpty() && solveResult.first().isNotEmpty())
         assert(solveResult.first().first().second == 7)
         val a0 = solveResult.first()[0]
@@ -81,23 +85,4 @@ internal class SampleTest {
         ) to -1)
         assertEquals(a6, b6)
     }
-
-    @Test
-    fun test2() {
-        for (i in 0..0) {
-            val examplePos = Position(
-                2, mutableListOf(
-                    Line(byteArrayOf(0, 0, 0, 0, 0, 6, 7, 8)),
-                    Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0)),
-                    Line(byteArrayOf(0, 0, 0, 1, 2, 3, 4, 5))
-                )
-            )
-            val time = measureTimeMillis {
-                examplePos.startSolving(16)
-            }
-            File("time").appendText("took $time ms to run $i\n")
-        }
-        File("time").appendText("attempt ended\n\n")
-    }
-
 }
