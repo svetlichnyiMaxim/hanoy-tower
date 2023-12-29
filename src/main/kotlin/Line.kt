@@ -1,11 +1,13 @@
+import kotlin.math.pow
+
 /**
  * provides a way to store line data, etc.
  * new elements are stored at the start of the array
  * @param elements elements in the array
  * @param topOneIndex stores top index of the line
  */
-class Line(private var elements: ByteArray, private var topOneIndex: Int) {
-    constructor(elements: ByteArray) : this(elements, elements.indexOfFirst { it == 0.toByte() })
+class Line(private var elements: ByteArray, private var topOneIndex: Int, var hash: Long) {
+    constructor(elements: ByteArray) : this(elements, elements.indexOfFirst { it == 0.toByte() }, elements.toLong())
 
     /**
      * used in auto tests for proper comparison
@@ -18,17 +20,6 @@ class Line(private var elements: ByteArray, private var topOneIndex: Int) {
         return super.equals(other)
     }
 
-    /**
-     * prints line data in human-readable form
-     */
-    fun toLong(): Long {
-        var stringBuilder = 0L
-        elements.forEach {
-            stringBuilder *= 10
-            stringBuilder += it
-        }
-        return stringBuilder
-    }
 
     /**
      * checks if line is full
@@ -42,14 +33,20 @@ class Line(private var elements: ByteArray, private var topOneIndex: Int) {
      * @return copy of the line with a removed top element
      */
     fun removeTopElement(): Line {
-        return Line(elements.copyOf().also { it[topOneIndex - 1] = 0 }, topOneIndex - 1)
+        val hashValue = hash - elements[topOneIndex - 1] * (10f.pow(8 - topOneIndex)).toInt()
+        return Line(
+            elements.copyOf().also { it[topOneIndex - 1] = 0 }, topOneIndex - 1, hashValue
+        )
     }
 
     /**
      * @return copy of the line with the specific element added to the top
      */
     fun addElement(element: Byte): Line {
-        return Line(elements.copyOf().apply { this[topOneIndex] = element }, topOneIndex + 1)
+        val hashValue = hash + element * (10f.pow(7 - topOneIndex)).toInt()
+        return Line(
+            elements.copyOf().apply { this[topOneIndex] = element }, topOneIndex + 1, hashValue
+        )
     }
 
     /**
@@ -72,4 +69,13 @@ class Line(private var elements: ByteArray, private var topOneIndex: Int) {
     fun display() {
         elements.forEach { if (it != 0.toByte()) print("$it ") else print("  ") }
     }
+}
+
+fun ByteArray.toLong(): Long {
+    var stringBuilder = 0L
+    this.forEach {
+        stringBuilder *= 10
+        stringBuilder += it
+    }
+    return stringBuilder
 }

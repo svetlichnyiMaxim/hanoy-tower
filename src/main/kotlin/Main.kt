@@ -4,10 +4,8 @@ import kotlin.system.measureTimeMillis
  * part where the program starts
  */
 fun main() {
-    var chosenDepth = 15
-    while (!runProgram(chosenDepth) && chosenDepth < 25) {
-        chosenDepth += 2
-    }
+    val chosenDepth = 15
+    runProgram(chosenDepth)
 }
 
 /**
@@ -34,7 +32,8 @@ private fun runProgram(currentDepth: Int): Boolean {
             measureTimeMillis {
                 val solveResult = examplePos.generateMoves(currentDepth)
                 if (solveResult.isNotEmpty() && solveResult.first().isNotEmpty()) {
-                    println("It was solved in ${solveResult.first().first().second} steps")
+                    require(solveResult.size in 0..1)
+                    println("It was solved in ${solveResult.first().size} steps")
                     solveResult.forEach {
                         it.forEach { (first, _) ->
                             println("*".repeat(15))
@@ -44,7 +43,7 @@ private fun runProgram(currentDepth: Int): Boolean {
                     println("*".repeat(15))
                     solved = true
                 } else {
-                    println("It wasn't solved yet, trying with bigger depth ${currentDepth + 2}")
+                    println("It wasn't solved yet, trying with bigger depth ${currentDepth + 1}")
                 }
             }
         } ms")
