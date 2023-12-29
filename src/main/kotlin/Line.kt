@@ -5,6 +5,7 @@ import kotlin.math.pow
  * new elements are stored at the start of the array
  * @param elements elements in the array
  * @param topOneIndex stores top index of the line
+ * @param hash hash code of this line
  */
 class Line(private val elements: ByteArray, private val topOneIndex: Int, val hash: Long) {
     constructor(elements: ByteArray) : this(elements, elements.indexOfFirst { it == 0.toByte() }, elements.toLong())
@@ -71,6 +72,9 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
     }
 }
 
+/**
+ * used for creating hash code on initialization
+ */
 fun ByteArray.toLong(): Long {
     var stringBuilder = 0L
     this.forEach {
