@@ -19,7 +19,7 @@ class Position(val startLine: Int, val lines: MutableList<Line>) {
         }
     }
 
-    private fun toLong(): Long {
+    private fun hash(): Long {
         return lines[0].hash * 1_000_000_000_000_000_000 + lines[1].hash * 1_000_000_000 + lines[2].hash
     }
 
@@ -99,10 +99,10 @@ class Position(val startLine: Int, val lines: MutableList<Line>) {
     }
 
     /**
-     * @return all possible positions we can get after a move
+     * @return set of all possible positions we can get after a move
      */
     private fun generateMoves(): MutableSet<Position> {
-        val str = this.toLong()
+        val str = hash()
         // if this pos was stored, we can use it's cached version, saves a lot of time
         occurredPositions[str]?.let {
             return it
@@ -111,7 +111,7 @@ class Position(val startLine: Int, val lines: MutableList<Line>) {
         possibleMove().forEach {
             generatedList.add(applyMove(it))
         }
-        // Stores positions with it's generatedMoves
+        // stores position with it's generatedMoves in the hashMap
         occurredPositions[str] = generatedList
         return generatedList
     }
@@ -121,12 +121,12 @@ class Position(val startLine: Int, val lines: MutableList<Line>) {
      * @return position after a curtain move
      */
     private fun applyMove(move: Move): Position {
-        val lineToRemove = move.startLine
-        val lineToAdd = move.endLine
-        val elementToMove = this.lines[lineToRemove].topElement()
         val copy = lines.toMutableList()
-        copy[lineToRemove] = copy[lineToRemove].removeTopElement()
-        copy[lineToAdd] = copy[lineToAdd].addElement(elementToMove)
+        val lineToRemove = copy[move.startLine]
+        val lineToAdd = copy[move.endLine]
+        val elementToMove = lineToRemove.topElement()
+        copy[move.startLine] = lineToRemove.removeTopElement()
+        copy[move.endLine] = lineToAdd.addElement(elementToMove)
         return Position(startLine, copy)
     }
 }
