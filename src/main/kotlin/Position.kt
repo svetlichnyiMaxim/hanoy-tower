@@ -76,24 +76,23 @@ class Position(val startLine: Int, val lines: MutableList<Line>) {
     fun generateMoves(
         depth: Int,
         originalDepth: Int = depth
-    ): MutableCollection<MutableList<Pair<Position, Int>>> {
+    ): MutableList<Pair<Position, Int>> {
         val currentDepth = originalDepth - depth + 1
         // no need to continue investigation if we can't improve depth score
         if (depth == 1) {
-            return mutableListOf(mutableListOf(Pair(generateMoves().firstOrNull { it.hasWon() }
-                ?: return mutableListOf(), currentDepth + 1), Pair(this, currentDepth)))
+            return mutableListOf(Pair(generateMoves().firstOrNull { it.hasWon() }
+                ?: return mutableListOf(), currentDepth + 1), Pair(this, currentDepth))
         }
-        val list = mutableListOf<MutableList<Pair<Position, Int>>>()
         generateMoves().forEach { pos ->
             if (pos.hasWon()) {
-                return mutableListOf(mutableListOf(Pair(pos, currentDepth)))
+                return mutableListOf(Pair(pos, currentDepth))
             }
             // Adds all moving sequences
-            list.addAll(pos.generateMoves(depth - 1, originalDepth).filter { it.isNotEmpty() })
-        }
-        if (list.isNotEmpty()) {
-            // we sort the list according to the final depth
-            return mutableListOf((list.minBy { it.first().second } + Pair(this, currentDepth)).toMutableList())
+            val list = pos.generateMoves(depth - 1, originalDepth)
+            if (list.isNotEmpty()) {
+                list.add(Pair(this, currentDepth))
+                return list
+            }
         }
         // fallback option
         return mutableListOf()

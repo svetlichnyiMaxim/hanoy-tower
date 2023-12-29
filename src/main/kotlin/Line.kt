@@ -6,7 +6,7 @@ import kotlin.math.pow
  * @param elements elements in the array
  * @param topOneIndex stores top index of the line
  */
-class Line(private var elements: ByteArray, private var topOneIndex: Int, var hash: Long) {
+class Line(private val elements: ByteArray, private val topOneIndex: Int, val hash: Long) {
     constructor(elements: ByteArray) : this(elements, elements.indexOfFirst { it == 0.toByte() }, elements.toLong())
 
     /**
