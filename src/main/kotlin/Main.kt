@@ -15,20 +15,28 @@ const val disks: Int = 8
  * part where the program starts
  */
 fun main() {
-    var solveResult: MutableList<Position>
-    val time = measureTimeMillis {
-        solveResult = examplePos.generateMoves(stepsToSolve)
-        while (solveResult.isEmpty()) {
-            stepsToSolve++
-            println(stepsToSolve)
-            solveResult = examplePos.generateMoves(stepsToSolve)
-        }
-    }
-    solveResult.forEach {
+    val solveResult = solve(examplePos)
+    solveResult.first.forEach {
         it.display()
         println("*".repeat(stepsToSolve))
     }
-    println("solved in $time ms and ${max(solveResult.size - 1, 0)} steps")
+    println("solved in ${solveResult.second} ms and ${max(solveResult.first.size - 1, 0)} steps")
+}
+
+/**
+ * it solves positions xd
+ */
+fun solve(position: Position): Pair<MutableList<Position>, Long> {
+    var solveResult: MutableList<Position>
+    val time = measureTimeMillis {
+        solveResult = position.generateMoves(stepsToSolve)
+        while (solveResult.isEmpty()) {
+            stepsToSolve++
+            println(stepsToSolve)
+            solveResult = position.generateMoves(stepsToSolve)
+        }
+    }
+    return Pair(solveResult, time)
 }
 
 /**
