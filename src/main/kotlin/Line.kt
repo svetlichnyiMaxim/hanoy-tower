@@ -8,7 +8,11 @@ import kotlin.math.pow
  * @param hash hash code of this line
  */
 class Line(private val elements: ByteArray, private val topOneIndex: Int, val hash: Long) {
-    constructor(elements: ByteArray) : this(elements, elements.indexOfFirst { it == 0.toByte() }, elements.hash())
+    constructor(elements: ByteArray) : this(
+        elements,
+        elements.topOneIndex(),
+        elements.hash()
+    )
 
     /**
      * used in auto tests for proper comparison
@@ -77,7 +81,21 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
 }
 
 /**
+ * @returns index of the first not null element or 8
+ */
+fun ByteArray.topOneIndex(): Int {
+    this.indexOfFirst { it == 0.toByte() }.let {
+        return if (it == -1) {
+            8
+        } else {
+            it
+        }
+    }
+}
+
+/**
  * used for creating hash code on initialization
+ * @return hash code
  */
 fun ByteArray.hash(): Long {
     var stringBuilder = 0L

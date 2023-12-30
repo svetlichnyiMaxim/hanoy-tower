@@ -74,45 +74,36 @@ class Position(val startLine: Int, val lines: MutableList<Line>) {
      * generates move from position
      */
     fun generateMoves(
-        depth: Int,
-        originalDepth: Int = depth
+        depth: Int, originalDepth: Int = depth
     ): MutableList<Pair<Position, Int>> {
         val currentDepth = originalDepth - depth + 1
         // no need to continue investigation if we can't improve depth score
         if (depth == 1) {
-            return mutableListOf(Pair(generateMoves().firstOrNull { it.hasWon() }
-                ?: return mutableListOf(), currentDepth + 1), Pair(this, currentDepth))
+            return mutableListOf(Pair(generateMoves(depth).firstOrNull { it.hasWon() } ?: return mutableListOf(),
+                currentDepth + 1), Pair(this, currentDepth))
         }
-        generateMoves().forEach { pos ->
-            if (pos.hasWon()) {
-                return mutableListOf(Pair(pos, currentDepth))
-            }
-            // Adds all moving sequences
-            val list = pos.generateMoves(depth - 1, originalDepth)
-            if (list.isNotEmpty()) {
-                list.add(Pair(this, currentDepth))
-                return list
-            }
-        }
-        // fallback option
-        return mutableListOf()
+        // I love clean code
+        return (generateMoves(depth).map { it.generateMoves(depth - 1, originalDepth) }.filter { it.isNotEmpty() }
+            .minByOrNull { it.size } ?: return mutableListOf()).apply { this.add(Pair(this@Position, currentDepth)) }
     }
 
     /**
      * @return set of all possible positions we can get after a move
      */
-    private fun generateMoves(): MutableSet<Position> {
+    private fun generateMoves(depth: Int): MutableSet<Position> {
         val str = hash()
         // if this pos was stored, we can use it's cached version, saves a lot of time
         occurredPositions[str]?.let {
-            return it
+            if (it.second >= depth) {
+                return mutableSetOf()
+            } else {
+                occurredPositions[str] = Pair(it.first, depth)
+                return it.first
+            }
         }
-        val generatedList = mutableSetOf<Position>()
-        possibleMove().forEach {
-            generatedList.add(applyMove(it))
-        }
+        val generatedList = possibleMove().map { applyMove(it) }.toMutableSet()
         // stores position with it's generatedMoves in the hashMap
-        occurredPositions[str] = generatedList
+        occurredPositions[str] = Pair(generatedList, depth)
         return generatedList
     }
 
