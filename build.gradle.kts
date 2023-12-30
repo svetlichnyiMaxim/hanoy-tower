@@ -1,4 +1,5 @@
 plugins {
+    id("io.gitlab.arturbosch.detekt") version "1.23.3"
     kotlin("jvm") version "1.9.0"
     application
 }
@@ -11,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test:1.8.10"))
+    testImplementation(kotlin("test:1.8.20-RC"))
 }
 
 tasks.test {

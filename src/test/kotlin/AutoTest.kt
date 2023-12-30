@@ -1,6 +1,7 @@
 import kotlin.test.Test
 
-internal class Test {
+@Suppress("unused")
+internal class AutoTest {
     @Test
     fun test() {
         val examplePos = Position(

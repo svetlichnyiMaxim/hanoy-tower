@@ -3,22 +3,7 @@
  * @param startLine line we started from
  * @param lines all lines
  */
-class Position(val startLine: Int, val lines: MutableList<Line>) {
-    override fun equals(other: Any?): Boolean {
-        if (other is Position) {
-            if (this.startLine == other.startLine) {
-                this.lines.forEachIndexed { index, line ->
-                    if (line != other.lines[index]) {
-                        return false
-                    }
-                }
-            }
-            return true
-        } else {
-            return super.equals(other)
-        }
-    }
-
+class Position(private val startLine: Int, private val lines: MutableList<Line>) {
     private fun hash(): String {
         return lines.joinToString(separator = "") { it.hash }
     }

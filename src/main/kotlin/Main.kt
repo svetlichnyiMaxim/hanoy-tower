@@ -9,7 +9,7 @@ var stepsToSolve: Int = 1
 /**
  * total number of the disks
  */
-const val disks: Int = 8
+const val DISKS: Int = 8
 
 /**
  * part where the program starts

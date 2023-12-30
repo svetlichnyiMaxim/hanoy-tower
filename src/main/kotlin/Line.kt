@@ -13,23 +13,11 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
     )
 
     /**
-     * used in auto tests for proper comparison
-     */
-    override fun equals(other: Any?): Boolean {
-        if (other is Line) {
-            val b = elements.contentEquals(other.elements)
-            return b
-        }
-        return super.equals(other)
-    }
-
-
-    /**
      * checks if line is full
      * @return if the line is full
      */
     fun isFull(): Boolean {
-        return topOneIndex == disks
+        return topOneIndex == DISKS
     }
 
     /**
@@ -64,7 +52,7 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
      */
     fun topElement(): Byte {
         return if (empty()) {
-            (disks + 1).toByte()
+            (DISKS + 1).toByte()
         } else {
             elements[topOneIndex - 1]
         }
@@ -84,7 +72,7 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
 fun ByteArray.topOneIndex(): Int {
     this.indexOfFirst { it == 0.toByte() }.let {
         return if (it == -1) {
-            disks
+            DISKS
         } else {
             it
         }
