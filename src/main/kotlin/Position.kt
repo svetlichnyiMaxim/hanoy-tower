@@ -19,8 +19,8 @@ class Position(val startLine: Int, val lines: MutableList<Line>) {
         }
     }
 
-    private fun hash(): Long {
-        return lines[0].hash * 1_000_000_000_000_000_000 + lines[1].hash * 1_000_000_000 + lines[2].hash
+    private fun hash(): String {
+        return lines.joinToString(separator = "") { it.hash }
     }
 
     /**
@@ -37,19 +37,11 @@ class Position(val startLine: Int, val lines: MutableList<Line>) {
      * @return if the game has ended
      */
     private fun hasWon(): Boolean {
-        return when (startLine) {
-            0 -> {
-                lines[1].isFull() || lines[2].isFull()
-            }
-
-            1 -> {
-                lines[0].isFull() || lines[2].isFull()
-            }
-
-            else -> {
-                lines[0].isFull() || lines[1].isFull()
-            }
+        lines.forEachIndexed { index, line ->
+            if (index != startLine && line.isFull())
+                return true
         }
+        return false
     }
 
     /**
@@ -74,23 +66,22 @@ class Position(val startLine: Int, val lines: MutableList<Line>) {
      * generates move from position
      */
     fun generateMoves(
-        depth: Int, originalDepth: Int = depth
-    ): MutableList<Pair<Position, Int>> {
-        val currentDepth = originalDepth - depth + 1
+        depth: Int
+    ): MutableList<Position> {
         // no need to continue investigation if we can't improve depth score
         if (depth == 1) {
-            return mutableListOf(Pair(generateMoves(depth).firstOrNull { it.hasWon() } ?: return mutableListOf(),
-                currentDepth + 1), Pair(this, currentDepth))
+            return mutableListOf(generateCurrentMoves(depth).firstOrNull { it.hasWon() } ?: return mutableListOf(),
+                this)
         }
         // I love clean code
-        return (generateMoves(depth).map { it.generateMoves(depth - 1, originalDepth) }.filter { it.isNotEmpty() }
-            .minByOrNull { it.size } ?: return mutableListOf()).apply { this.add(Pair(this@Position, currentDepth)) }
+        return (generateCurrentMoves(depth).map { it.generateMoves(depth - 1) }.filter { it.isNotEmpty() }
+            .minByOrNull { it.size } ?: return mutableListOf()).apply { this.add(this@Position) }
     }
 
     /**
      * @return set of all possible positions we can get after a move
      */
-    private fun generateMoves(depth: Int): MutableSet<Position> {
+    private fun generateCurrentMoves(depth: Int): Collection<Position> {
         val str = hash()
         // if this pos was stored, we can use it's cached version, saves a lot of time
         occurredPositions[str]?.let {

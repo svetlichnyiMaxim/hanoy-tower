@@ -1,5 +1,3 @@
-import kotlin.math.pow
-
 /**
  * provides a way to store line data, etc.
  * new elements are stored at the start of the array
@@ -7,7 +5,7 @@ import kotlin.math.pow
  * @param topOneIndex stores top index of the line
  * @param hash hash code of this line
  */
-class Line(private val elements: ByteArray, private val topOneIndex: Int, val hash: Long) {
+class Line(private val elements: ByteArray, private val topOneIndex: Int, val hash: String) {
     constructor(elements: ByteArray) : this(
         elements,
         elements.topOneIndex(),
@@ -31,14 +29,14 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
      * @return if the line is full
      */
     fun isFull(): Boolean {
-        return topOneIndex == 8
+        return topOneIndex == disks
     }
 
     /**
      * @return copy of the line with a removed top element
      */
     fun removeTopElement(): Line {
-        val hashValue = hash - elements[topOneIndex - 1] * (10f.pow(8 - topOneIndex)).toInt()
+        val hashValue = hash.replace(elements[topOneIndex - 1].toString(), "0")
         return Line(
             elements.copyOf().also { it[topOneIndex - 1] = 0 }, topOneIndex - 1, hashValue
         )
@@ -48,7 +46,7 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
      * @return copy of the line with the specific element added to the top
      */
     fun addElement(element: Byte): Line {
-        val hashValue = hash + element * (10f.pow(7 - topOneIndex)).toInt()
+        val hashValue = hash.replaceFirst("0", element.toString())
         return Line(
             elements.copyOf().apply { this[topOneIndex] = element }, topOneIndex + 1, hashValue
         )
@@ -62,11 +60,11 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
     }
 
     /**
-     * @return topElement if exists, 9 if line is full
+     * @return topElement if exists, ($disks + 1) if line is full
      */
     fun topElement(): Byte {
         return if (empty()) {
-            9
+            (disks + 1).toByte()
         } else {
             elements[topOneIndex - 1]
         }
@@ -81,12 +79,12 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
 }
 
 /**
- * @returns index of the first not null element or 8
+ * @returns index of the first not null element or $disks
  */
 fun ByteArray.topOneIndex(): Int {
     this.indexOfFirst { it == 0.toByte() }.let {
         return if (it == -1) {
-            8
+            disks
         } else {
             it
         }
@@ -97,10 +95,9 @@ fun ByteArray.topOneIndex(): Int {
  * used for creating hash code on initialization
  * @return hash code
  */
-fun ByteArray.hash(): Long {
-    var stringBuilder = 0L
+fun ByteArray.hash(): String {
+    var stringBuilder = ""
     this.forEach {
-        stringBuilder *= 10
         stringBuilder += it
     }
     return stringBuilder
