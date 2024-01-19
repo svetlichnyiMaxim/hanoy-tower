@@ -5,7 +5,7 @@
  */
 class Position(private val startLine: Int, private val lines: MutableList<Line>) {
     private fun hash(): String {
-        return lines.joinToString(separator = "") { it.hash }
+        return lines.joinToString(separator = " ") { it.hash }
     }
 
     /**

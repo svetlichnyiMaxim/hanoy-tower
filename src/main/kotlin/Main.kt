@@ -44,7 +44,6 @@ fun solve(position: Position): Pair<MutableList<Position>, Long> {
  */
 val occurredPositions: HashMap<String, Pair<MutableCollection<Position>, Int>> = hashMapOf()
 
-
 /**
  * an example pos created for testing
  */
