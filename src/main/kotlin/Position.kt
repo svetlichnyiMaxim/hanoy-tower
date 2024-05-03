@@ -3,7 +3,7 @@
  * @param startLine line we started from
  * @param lines all lines
  */
-class Position(private val startLine: Int, private val lines: Array<Line>) {
+class Position(private val startLine: Int, private val lines: Array<Line>, private val maxSize: Int) {
     private fun hash(): String {
         return lines.joinToString(separator = " ") { it.hash }
     }
@@ -23,7 +23,7 @@ class Position(private val startLine: Int, private val lines: Array<Line>) {
      */
     private fun hasWon(): Boolean {
         lines.forEachIndexed { index, line ->
-            if (index != startLine && line.isFull())
+            if (index != startLine && line.size() == maxSize)
                 return true
         }
         return false
@@ -32,15 +32,15 @@ class Position(private val startLine: Int, private val lines: Array<Line>) {
     /**
      * @return possible moves that can occur
      */
-    private fun possibleMove(): MutableSet<Move> {
-        val list = mutableSetOf<Move>()
-        lines.forEachIndexed { startIndex, startElement ->
-            if (lines[startIndex].empty()) {
+    private fun possibleMoves(): MutableList<Move> {
+        val list = mutableListOf<Move>()
+        lines.forEachIndexed { startLineIndex, startLine ->
+            if (startLine.empty()) {
                 return@forEachIndexed
             }
-            lines.forEachIndexed { endIndex, endElement ->
-                if (endIndex != startIndex && (endElement.empty() || endElement.peek() > startElement.peek())) {
-                    list.add(Move(startIndex, endIndex))
+            lines.forEachIndexed { endLineIndex, endLine ->
+                if (endLineIndex != startLineIndex && (endLine.empty() || endLine.peek() > startLine.peek())) {
+                    list.add(Move(startLineIndex, endLineIndex))
                 }
             }
         }
@@ -48,41 +48,52 @@ class Position(private val startLine: Int, private val lines: Array<Line>) {
     }
 
     /**
-     * generates move from position
+     * finds position solution or nothing
      */
     fun solve(
         depth: Int
     ): MutableList<Position> {
-        // no need to continue investigation if we can't improve depth score
-        if (depth == 1) {
-            return mutableListOf(generateCurrentMoves(depth).firstOrNull { it.hasWon() } ?: return mutableListOf(),
-                this)
+        if (this.hasWon()) {
+            return mutableListOf(this)
+        }
+        if (depth == 0) {
+            return mutableListOf()
         }
         // I love clean code
-        return (generateCurrentMoves(depth)
-            .map { it.solve(depth - 1) }
-            .filter { it.isNotEmpty() }
-            .minByOrNull { it.size } ?: return mutableListOf())
-            .apply { this.add(this@Position) }
+        return (generateMoves(depth)
+            .map {
+                it.solve(depth - 1)
+            }
+            .filter {
+                it.isNotEmpty()
+            }
+            .minByOrNull {
+                it.size
+            } ?: return mutableListOf())
+            .apply {
+                this.add(this@Position)
+            }
     }
 
     /**
      * @return set of all possible positions we can get after a move
      */
-    private fun generateCurrentMoves(depth: Int): Collection<Position> {
-        val str = hash()
+    private fun generateMoves(depth: Int): Collection<Position> {
+        val hashCode = hash()
         // if this pos was stored, we can use it's cached version, saves a lot of time
-        occurredPositions[str]?.let {
+        occurredPositions[hashCode]?.let {
             if (it.second >= depth) {
                 return mutableSetOf()
             } else {
-                occurredPositions[str] = Pair(it.first, depth)
+                occurredPositions[hashCode] = Pair(it.first, depth)
                 return it.first
             }
         }
-        val generatedList = possibleMove().map { applyMove(it) }.toMutableSet()
+        val generatedList = this.possibleMoves().map {
+            this.applyMove(it)
+        }
         // stores position with it's generatedMoves in the hashMap
-        occurredPositions[str] = Pair(generatedList, depth)
+        occurredPositions[hashCode] = Pair(generatedList, depth)
         return generatedList
     }
 
@@ -91,13 +102,11 @@ class Position(private val startLine: Int, private val lines: Array<Line>) {
      * @return position after a curtain move
      */
     private fun applyMove(move: Move): Position {
-        val copy = lines.clone()
-        val lineToRemove = copy[move.startLine]
-        val lineToAdd = copy[move.endLine]
-        val elementToMove = lineToRemove.peek()
-        copy[move.startLine] = lineToRemove.removeTopElement()
-        copy[move.endLine] = lineToAdd.addElement(elementToMove)
-        return Position(startLine, copy)
+        val copy = Array(lines.size) { lines[it].copy() }
+        val elementToMove = copy[move.startLine].peek()
+        copy[move.startLine].pop()
+        copy[move.endLine].addElement(elementToMove)
+        return Position(startLine, copy, maxSize)
     }
 }
 

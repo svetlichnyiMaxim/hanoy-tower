@@ -4,7 +4,7 @@ import kotlin.system.measureTimeMillis
 /**
  * steps we use to solve position
  */
-var stepsToSolve: Int = 1
+var stepsToSolve: Int = 0
 
 /**
  * total number of the disks
@@ -42,16 +42,18 @@ fun solve(position: Position): Pair<MutableList<Position>, Long> {
 /**
  * we store occurred positions here which massively increases speed
  */
-val occurredPositions: HashMap<String, Pair<MutableCollection<Position>, Int>> = hashMapOf()
+val occurredPositions: HashMap<String, Pair<List<Position>, Int>> = hashMapOf()
 
 /**
  * an example pos created for testing
  */
 val examplePos: Position = Position(
-    3, arrayOf(
-        Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), 8),
-        Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), 8),
-        Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), 8),
-        Line(byteArrayOf(8, 7, 6, 5, 4, 3, 2, 1), 8)
-    )
+    3,
+    arrayOf(
+        Line(),
+        Line(),
+        Line(),
+        Line(byteArrayOf(8, 7, 6, 5, 4, 3, 2, 1))
+    ),
+    8
 )
