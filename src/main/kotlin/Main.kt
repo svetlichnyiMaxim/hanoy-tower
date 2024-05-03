@@ -29,11 +29,11 @@ fun main() {
 fun solve(position: Position): Pair<MutableList<Position>, Long> {
     var solveResult: MutableList<Position>
     val time = measureTimeMillis {
-        solveResult = position.generateMoves(stepsToSolve)
+        solveResult = position.solve(stepsToSolve)
         while (solveResult.isEmpty()) {
             stepsToSolve++
             println(stepsToSolve)
-            solveResult = position.generateMoves(stepsToSolve)
+            solveResult = position.solve(stepsToSolve)
         }
     }
     return Pair(solveResult, time)
@@ -48,10 +48,10 @@ val occurredPositions: HashMap<String, Pair<MutableCollection<Position>, Int>> =
  * an example pos created for testing
  */
 val examplePos: Position = Position(
-    3, mutableListOf(
-        Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0)),
-        Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0)),
-        Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0)),
-        Line(byteArrayOf(8, 7, 6, 5, 4, 3, 2, 1))
+    3, arrayOf(
+        Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), 8),
+        Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), 8),
+        Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), 8),
+        Line(byteArrayOf(8, 7, 6, 5, 4, 3, 2, 1), 8)
     )
 )

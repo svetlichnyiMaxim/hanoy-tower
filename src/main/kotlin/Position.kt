@@ -3,7 +3,7 @@
  * @param startLine line we started from
  * @param lines all lines
  */
-class Position(private val startLine: Int, private val lines: MutableList<Line>) {
+class Position(private val startLine: Int, private val lines: Array<Line>) {
     private fun hash(): String {
         return lines.joinToString(separator = " ") { it.hash }
     }
@@ -39,7 +39,7 @@ class Position(private val startLine: Int, private val lines: MutableList<Line>)
                 return@forEachIndexed
             }
             lines.forEachIndexed { endIndex, endElement ->
-                if (endIndex != startIndex && endElement.topElement() > startElement.topElement()) {
+                if (endIndex != startIndex && (endElement.empty() || endElement.peek() > startElement.peek())) {
                     list.add(Move(startIndex, endIndex))
                 }
             }
@@ -50,7 +50,7 @@ class Position(private val startLine: Int, private val lines: MutableList<Line>)
     /**
      * generates move from position
      */
-    fun generateMoves(
+    fun solve(
         depth: Int
     ): MutableList<Position> {
         // no need to continue investigation if we can't improve depth score
@@ -59,8 +59,11 @@ class Position(private val startLine: Int, private val lines: MutableList<Line>)
                 this)
         }
         // I love clean code
-        return (generateCurrentMoves(depth).map { it.generateMoves(depth - 1) }.filter { it.isNotEmpty() }
-            .minByOrNull { it.size } ?: return mutableListOf()).apply { this.add(this@Position) }
+        return (generateCurrentMoves(depth)
+            .map { it.solve(depth - 1) }
+            .filter { it.isNotEmpty() }
+            .minByOrNull { it.size } ?: return mutableListOf())
+            .apply { this.add(this@Position) }
     }
 
     /**
@@ -88,10 +91,10 @@ class Position(private val startLine: Int, private val lines: MutableList<Line>)
      * @return position after a curtain move
      */
     private fun applyMove(move: Move): Position {
-        val copy = lines.toMutableList()
+        val copy = lines.clone()
         val lineToRemove = copy[move.startLine]
         val lineToAdd = copy[move.endLine]
-        val elementToMove = lineToRemove.topElement()
+        val elementToMove = lineToRemove.peek()
         copy[move.startLine] = lineToRemove.removeTopElement()
         copy[move.endLine] = lineToAdd.addElement(elementToMove)
         return Position(startLine, copy)

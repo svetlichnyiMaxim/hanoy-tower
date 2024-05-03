@@ -1,15 +1,24 @@
+import java.util.*
+
 /**
  * provides a way to store line data, etc.
  * new elements are stored at the start of the array
  * @param elements elements in the array
- * @param topOneIndex stores top index of the line
  * @param hash hash code of this line
+ * @param maxSize max size of a line (used to determine if we won)
+ * @sample
+ * Line(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0))
+ * Line(byteArrayOf(8, 7, 6, 5, 4, 3, 2, 1))
  */
-class Line(private val elements: ByteArray, private val topOneIndex: Int, val hash: String) {
-    constructor(elements: ByteArray) : this(
-        elements,
-        elements.topOneIndex(),
-        elements.hash()
+class Line(private val elements: Stack<Byte>, val hash: String, private val maxSize: Int) {
+    constructor(elements: ByteArray, maxSize: Int) : this(
+        Stack<Byte>().apply {
+            elements.forEach {
+                this.push(it)
+            }
+        },
+        elements.hash(),
+        maxSize
     )
 
     /**
@@ -17,16 +26,15 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
      * @return if the line is full
      */
     fun isFull(): Boolean {
-        return topOneIndex == DISKS
+        return elements.size == maxSize
     }
 
     /**
      * @return copy of the line with a removed top element
      */
     fun removeTopElement(): Line {
-        val hashValue = hash.replace(elements[topOneIndex - 1].toString(), "0")
         return Line(
-            elements.copyOf().also { it[topOneIndex - 1] = 0 }, topOneIndex - 1, hashValue
+            elements.copy().apply { this.pop() }, hash.dropLast(1), maxSize
         )
     }
 
@@ -36,7 +44,7 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
     fun addElement(element: Byte): Line {
         val hashValue = hash.replaceFirst("0", element.toString())
         return Line(
-            elements.copyOf().apply { this[topOneIndex] = element }, topOneIndex + 1, hashValue
+            elements.copy().apply { this.push(element) }, hashValue + element.toString(), maxSize
         )
     }
 
@@ -44,18 +52,14 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
      * used to determine if the line is empty
      */
     fun empty(): Boolean {
-        return topOneIndex == 0
+        return elements.empty()
     }
 
     /**
      * @return topElement if exists, ($disks + 1) if line is full
      */
-    fun topElement(): Byte {
-        return if (empty()) {
-            (DISKS + 1).toByte()
-        } else {
-            elements[topOneIndex - 1]
-        }
+    fun peek(): Byte {
+        return elements.peek()
     }
 
     /**
@@ -63,19 +67,6 @@ class Line(private val elements: ByteArray, private val topOneIndex: Int, val ha
      */
     fun display() {
         elements.forEach { if (it != 0.toByte()) print("$it ") else print("  ") }
-    }
-}
-
-/**
- * @returns index of the first not null element or $disks
- */
-fun ByteArray.topOneIndex(): Int {
-    this.indexOfFirst { it == 0.toByte() }.let {
-        return if (it == -1) {
-            DISKS
-        } else {
-            it
-        }
     }
 }
 
@@ -89,4 +80,15 @@ fun ByteArray.hash(): String {
         stringBuilder += it
     }
     return stringBuilder
+}
+
+/**
+ * creates copy of the byte stack
+ */
+fun Stack<Byte>.copy(): Stack<Byte> {
+    val stack = Stack<Byte>()
+    this.forEach {
+        stack.push(it)
+    }
+    return stack
 }
