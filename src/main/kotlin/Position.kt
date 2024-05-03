@@ -1,3 +1,5 @@
+import kotlin.system.measureTimeMillis
+
 /**
  * used to store position
  * @param startLine line we started from
@@ -11,10 +13,11 @@ class Position(private val startLine: Int, private val lines: Array<Line>, priva
     /**
      * displays position in a human-readable form
      */
-    fun display() {
-        lines.forEach {
-            it.display()
-            println()
+    override fun toString(): String {
+        return lines.joinToString(
+            separator = "\n"
+        ) {
+            it.toString()
         }
     }
 
@@ -23,8 +26,7 @@ class Position(private val startLine: Int, private val lines: Array<Line>, priva
      */
     private fun hasWon(): Boolean {
         lines.forEachIndexed { index, line ->
-            if (index != startLine && line.size() == maxSize)
-                return true
+            if (index != startLine && line.size() == maxSize) return true
         }
         return false
     }
@@ -48,9 +50,36 @@ class Position(private val startLine: Int, private val lines: Array<Line>, priva
     }
 
     /**
-     * finds position solution or nothing
+     * solves position and measures used time
+     * @return Pair of solve sequence and time used
      */
-    fun solve(
+    fun solveRecursivelyWithTimeMeasurement(): Pair<MutableList<Position>, Long> {
+        var solveResult: MutableList<Position>
+        val time = measureTimeMillis {
+            solveResult = solveRecursively()
+        }
+        return Pair(solveResult, time)
+    }
+
+    /**
+     * solves position
+     * @return winning sequence
+     */
+    fun solveRecursively(): MutableList<Position> {
+        var currentDepth = 0
+        var solveResult = solveAtDepth(currentDepth)
+        while (solveResult.isEmpty()) {
+            currentDepth++
+            solveResult = solveAtDepth(currentDepth)
+        }
+        return solveResult
+    }
+
+    /**
+     * finds position solution or nothing
+     * @return winning sequence or empty list
+     */
+    fun solveAtDepth(
         depth: Int
     ): MutableList<Position> {
         if (this.hasWon()) {
@@ -60,19 +89,15 @@ class Position(private val startLine: Int, private val lines: Array<Line>, priva
             return mutableListOf()
         }
         // I love clean code
-        return (generateMoves(depth)
-            .map {
-                it.solve(depth - 1)
-            }
-            .filter {
-                it.isNotEmpty()
-            }
-            .minByOrNull {
-                it.size
-            } ?: return mutableListOf())
-            .apply {
-                this.add(this@Position)
-            }
+        return (generateMoves(depth).map {
+            it.solveAtDepth(depth - 1)
+        }.filter {
+            it.isNotEmpty()
+        }.minByOrNull {
+            it.size
+        } ?: return mutableListOf()).apply {
+            this.add(this@Position)
+        }
     }
 
     /**
@@ -105,7 +130,7 @@ class Position(private val startLine: Int, private val lines: Array<Line>, priva
         val copy = Array(lines.size) { lines[it].copy() }
         val elementToMove = copy[move.startLine].peek()
         copy[move.startLine].pop()
-        copy[move.endLine].addElement(elementToMove)
+        copy[move.endLine].push(elementToMove)
         return Position(startLine, copy, maxSize)
     }
 }

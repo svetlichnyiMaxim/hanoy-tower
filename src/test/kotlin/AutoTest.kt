@@ -11,7 +11,7 @@ class AutoTest {
                 Line(byteArrayOf(4, 3, 2, 1))
             ), 8
         )
-        val solveResult = solve(examplePos)
+        val solveResult = examplePos.solveRecursivelyWithTimeMeasurement()
         assert(solveResult.first.size == 16)
         assert(solveResult.second < 300L)
         occurredPositions.clear()
@@ -27,7 +27,7 @@ class AutoTest {
                 Line(byteArrayOf(5, 4, 3, 2, 1))
             ), 8
         )
-        val solveResult = solve(examplePos)
+        val solveResult = examplePos.solveRecursivelyWithTimeMeasurement()
         assert(solveResult.first.size == 32)
         assert(solveResult.second < 300L)
         occurredPositions.clear()
@@ -43,7 +43,7 @@ class AutoTest {
                 Line(byteArrayOf(6, 5, 4, 3, 2, 1)),
             ), 8
         )
-        val solveResult = solve(examplePos)
+        val solveResult = examplePos.solveRecursivelyWithTimeMeasurement()
         assert(solveResult.first.size == 64)
         assert(solveResult.second < 1000L)
         occurredPositions.clear()
@@ -60,7 +60,7 @@ class AutoTest {
             ),
             8
         )
-        val solveResult = solve(examplePos)
+        val solveResult = examplePos.solveRecursivelyWithTimeMeasurement()
         assert(solveResult.first.size == 128)
         assert(solveResult.second < 2500L)
         occurredPositions.clear()
@@ -77,7 +77,7 @@ class AutoTest {
             ),
             8
         )
-        val solveResult = solve(examplePos)
+        val solveResult = examplePos.solveRecursivelyWithTimeMeasurement()
         assert(solveResult.first.size == 256)
         assert(solveResult.second < 5000L)
         occurredPositions.clear()
